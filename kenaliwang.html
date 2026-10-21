@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuiz Matematik Tahun 2: Kenali & Nilai Wang</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Fredoka & Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            yellow: '#FFD166',
+                            green: '#06D6A0',
+                            blue: '#118AB2',
+                            red: '#EF476F',
+                            purple: '#8338EC',
+                            dark: '#073B4C'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        quicksand: ['Quicksand', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#e0f2fe 2px, transparent 2px);
+            background-size: 24px 24px;
+        }
+        h1, h2, h3, .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .option-card:hover {
+            transform: translateY(-2px);
+        }
+        .option-card {
+            transition: all 0.2s ease-in-out;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #certificate-print-area, #certificate-print-area * {
+                visibility: visible;
+            }
+            #certificate-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="bg-gradient-to-r from-brand-blue to-brand-purple text-white shadow-lg py-4 px-6 mb-8 no-print">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-400 text-brand-dark p-3 rounded-2xl shadow-inner text-2xl font-bold">
+                    <i class="fa-solid font-bold fa-coins"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-bold tracking-wide">Kuiz Matematik Tahun 2</h1>
+                    <p class="text-xs md:text-sm text-cyan-100">Tajuk: Wang (Kenali Wang & Nilai Wang)</p>
+                </div>
+            </div>
+            <div id="student-badge" class="hidden bg-white/20 backdrop-blur-md px-4 py-2 rounded-xl text-right">
+                <p id="badge-name" class="font-bold text-sm leading-tight text-yellow-300"></p>
+                <p id="badge-class" class="text-xs text-slate-100"></p>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4">
+
+        <!-- SKRIN 1: BORANG MAKLUMAT MURID -->
+        <section id="start-screen" class="bg-white rounded-3xl p-6 md:p-10 shadow-xl border-4 border-amber-300">
+            <div class="text-center mb-8">
+                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Modul Buku Teks</span>
+                <h2 class="text-3xl font-bold text-brand-dark mt-2">Selamat Datang ke Kuiz Wang! 💰</h2>
+                <p class="text-slate-600 mt-2">Sila isi nama dan kelas anda sebelum memulakan kuiz 15 soalan ini.</p>
+            </div>
+
+            <form id="info-form" class="space-y-6 max-w-md mx-auto" onsubmit="startQuiz(event)">
+                <div>
+                    <label for="student-name" class="block text-sm font-bold text-slate-700 mb-2">
+                        <i class="fa-solid fa-user text-brand-blue mr-1"></i> Nama Murid:
+                    </label>
+                    <input type="text" id="student-name" required placeholder="Contoh: Muhammad Ali" 
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none text-slate-800 font-semibold transition">
+                </div>
+
+                <div>
+                    <label for="student-class" class="block text-sm font-bold text-slate-700 mb-2">
+                        <i class="fa-solid fa-school text-brand-purple mr-1"></i> Darjah / Kelas:
+                    </label>
+                    <input type="text" id="student-class" required placeholder="Contoh: 2 Cerdik" 
+                        class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 focus:border-brand-purple focus:ring-2 focus:ring-purple-100 outline-none text-slate-800 font-semibold transition">
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-4 bg-gradient-to-r from-emerald-400 to-brand-green hover:from-emerald-500 hover:to-teal-600 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center gap-2">
+                    <span>Mula Kuiz Sekarang</span>
+                    <i class="fa-solid fa-circle-play"></i>
+                </button>
+            </form>
+        </section>
+
+        <!-- SKRIN 2: SOALAN KUIZ -->
+        <section id="quiz-screen" class="hidden space-y-6 no-print">
+            
+            <!-- Kad Panduan Buku Teks -->
+            <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex items-center justify-between text-amber-900 text-sm">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-book-open text-amber-600 text-2xl"></i>
+                    <span>Jawab semua <strong>15 soalan</strong> di bawah. Tekan butang semak jawapan di bahagian paling bawah setelah selesai!</span>
+                </div>
+            </div>
+
+            <!-- Container Soalan -->
+            <div id="questions-container" class="space-y-6">
+                <!-- Soalan akan ditarik melalui JS -->
+            </div>
+
+            <!-- Action Bar Bottom -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg border-2 border-slate-200 text-center space-y-3">
+                <p id="unanswered-warning" class="text-red-500 font-semibold hidden text-sm">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Sila jawab semua soalan sebelum menghantar!
+                </p>
+                <button onclick="checkAnswers()" 
+                    class="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-brand-blue to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold text-xl rounded-2xl shadow-lg hover:shadow-xl transition transform active:scale-95">
+                    <i class="fa-solid fa-paper-plane mr-2"></i> Semak Jawapan / Hantar
+                </button>
+            </div>
+        </section>
+
+        <!-- SKRIN 3: SIJIL & KEPUTUSAN -->
+        <section id="result-screen" class="hidden space-y-8">
+            
+            <!-- Ringkasan Markah -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-4 border-emerald-400 text-center no-print">
+                <div class="inline-block p-4 bg-emerald-100 rounded-full text-emerald-600 mb-3 text-3xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-brand-dark">Tahniah! Kuiz Selesai 🎉</h2>
+                <p class="text-slate-600">Berikut adalah pencapaian anda:</p>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 my-6">
+                    <div class="bg-sky-50 border border-sky-200 p-4 rounded-2xl">
+                        <p class="text-xs text-sky-600 font-bold uppercase">Markah</p>
+                        <p id="score-text" class="text-3xl font-black text-sky-700 mt-1">0 / 15</p>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 p-4 rounded-2xl">
+                        <p class="text-xs text-purple-600 font-bold uppercase">Peratus</p>
+                        <p id="percentage-text" class="text-3xl font-black text-purple-700 mt-1">0%</p>
+                    </div>
+                    <div class="col-span-2 md:col-span-1 bg-amber-50 border border-amber-200 p-4 rounded-2xl">
+                        <p class="text-xs text-amber-600 font-bold uppercase">Keputusan</p>
+                        <p id="grade-badge" class="text-xl font-bold text-amber-700 mt-2">-</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+                    <button onclick="window.print()" 
+                        class="px-6 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> Cetak / Simpan Sijil (PDF)
+                    </button>
+                    <button onclick="restartQuiz()" 
+                        class="px-6 py-3 bg-brand-yellow hover:bg-amber-400 text-brand-dark font-bold rounded-xl shadow-md transition flex items-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i> Buat Semula Kuiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- SIJIL PENCAPAIAN DIGITAL (Print Target Area) -->
+            <div id="certificate-print-area" class="bg-white border-8 border-double border-amber-500 p-8 rounded-3xl shadow-2xl text-center relative overflow-hidden my-6">
+                <!-- Frame Watermark / Decor -->
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-amber-500 pointer-events-none">
+                    <i class="fa-solid fa-certificate text-9xl" style="font-size: 200px;"></i>
+                </div>
+
+                <div class="border-2 border-amber-200 p-6 md:p-10 rounded-2xl bg-gradient-to-b from-amber-50/40 to-white">
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        <i class="fa-solid fa-award text-amber-500 text-4xl"></i>
+                        <h2 class="text-2xl md:text-4xl font-black uppercase text-amber-900 tracking-wider font-heading">Sijil Pencapaian Digital</h2>
+                        <i class="fa-solid fa-award text-amber-500 text-4xl"></i>
+                    </div>
+                    <p class="text-slate-500 font-medium text-sm md:text-base">Kuiz Matematik Tahun 2: Kenali & Nilai Wang</p>
+
+                    <div class="my-6 space-y-2">
+                        <p class="text-slate-600 italic">Sijil ini dengan bangganya dianugerahkan kepada:</p>
+                        <h3 id="cert-name" class="text-3xl md:text-4xl font-extrabold text-brand-blue font-heading underline decoration-amber-400 decoration-wavy py-2"></h3>
+                        <p class="text-lg text-slate-700 font-bold">Dari Kelas: <span id="cert-class" class="text-brand-purple"></span></p>
+                    </div>
+
+                    <p class="text-slate-600 max-w-lg mx-auto text-sm md:text-base">
+                        Telah berjaya menyempurnakan Kuiz Matematik (Kenali Wang & Nilai Wang) berdasarkan Buku Teks Matematik Tahun 2 dengan pencapaian:
+                    </p>
+
+                    <div class="my-6 inline-block bg-amber-100 border-2 border-amber-300 rounded-2xl px-8 py-4 shadow-sm">
+                        <p class="text-xs text-amber-800 font-bold uppercase tracking-wider">Markah Keseluruhan</p>
+                        <p id="cert-score" class="text-3xl md:text-4xl font-black text-amber-900 mt-1">15 / 15 (100%)</p>
+                        <p id="cert-status" class="text-sm font-bold text-emerald-700 mt-1">Sangat Cemerlang!</p>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-slate-200 flex justify-between items-end text-xs md:text-sm text-slate-500">
+                        <div class="text-left">
+                            <p>Tarikh: <span id="cert-date" class="font-bold text-slate-700"></span></p>
+                            <p>Status: <span class="font-bold text-emerald-600"><i class="fa-solid fa-circle-check"></i> Sah Disemak Sistem</span></p>
+                        </div>
+                        <div class="text-right">
+                            <div class="w-32 border-b border-slate-400 mb-1"></div>
+                            <p class="font-bold text-slate-700">Tandatangan / Pengesahan Guru</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEMAKAN JAWAPAN TERPERINCI -->
+            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-xl border-2 border-slate-200 no-print">
+                <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-brand-blue"></i> Ulasan & Semakan Jawapan
+                </h3>
+                <div id="review-container" class="space-y-4">
+                    <!-- Ulasan jawapan akan dijanakan melalui Javascript -->
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- JS Logic -->
+    <script>
+        // Data Soalan (15 Soalan berdasarkan Standard Buku Teks)
+        const quizData = [
+            {
+                id: 1,
+                question: "Apakah warna bagi wang kertas RM100?",
+                options: ["Ungu", "Hijau", "Merah", "Biru"],
+                answer: 0,
+                hint: "Rujuk Buku Teks: RM100 mempunyai warna ungu."
+            },
+            {
+                id: 2,
+                question: "Gambar haiwan apakah yang terdapat pada wang kertas RM20?",
+                options: ["Penyu", "Burung Helang", "Orang Utan", "Harimau"],
+                answer: 0,
+                hint: "Penyu terdapat pada bahagian belakang wang RM20."
+            },
+            {
+                id: 3,
+                question: "Apakah gambar bunga yang ada pada semua wang kertas Malaysia?",
+                options: ["Bunga Raya", "Bunga Mawar", "Bunga Sunting", "Bunga Orkid"],
+                answer: 0,
+                hint: "Bunga Raya ialah Bunga Kebangsaan Malaysia."
+            },
+            {
+                id: 4,
+                question: "Wang kertas RM50 berwarna apa?",
+                options: ["Hijau-Biru", "Merah", "Jingga", "Coklat"],
+                answer: 0,
+                hint: "Wang kertas RM50 gabungan warna hijau dan biru."
+            },
+            {
+                id: 5,
+                question: "Berapakah keping wang RM50 yang sama nilai dengan RM100?",
+                options: ["2 keping", "5 keping", "10 keping", "1 keping"],
+                answer: 0,
+                hint: "RM50 + RM50 = RM100 (2 keping)."
+            },
+            {
+                id: 6,
+                question: "Berapakah keping wang RM10 yang sama nilai dengan RM100?",
+                options: ["10 keping", "5 keping", "2 keping", "20 keping"],
+                answer: 0,
+                hint: "10 keping wang RM10 = RM100."
+            },
+            {
+                id: 7,
+                question: "Tuliskan \"Lima puluh ringgit\" dalam bentuk nombor wang.",
+                options: ["RM50", "RM5.00", "RM500", "50 sen"],
+                answer: 0,
+                hint: "Lima puluh ringgit ditulis sebagai RM50."
+            },
+            {
+                id: 8,
+                question: "\"Dua puluh ringgit sembilan puluh sen\" ditulis sebagai:",
+                options: ["RM20.90", "RM29.00", "RM2.90", "RM209"],
+                answer: 0,
+                hint: "Titik memisahkan ringgit dan sen: RM20.90."
+            },
+            {
+                id: 9,
+                question: "Kombinasi 1 keping RM10 dan 1 keping RM5 menjadi jumlah nilai berapa?",
+                options: ["RM15", "RM50", "RM105", "RM20"],
+                answer: 0,
+                hint: "RM10 + RM5 = RM15."
+            },
+            {
+                id: 10,
+                question: "Antara berikut, yang manakah simbol bagi Ringgit Malaysia?",
+                options: ["RM", "$", "¥", "€"],
+                answer: 0,
+                hint: "RM ialah simbol rasmi mata wang Malaysia."
+            },
+            {
+                id: 11,
+                question: "100 sen adalah sama nilai dengan berapa Ringgit?",
+                options: ["RM1", "RM10", "RM100", "10 sen"],
+                answer: 0,
+                hint: "100 sen = RM1."
+            },
+            {
+                id: 12,
+                question: "Berapakah keping wang RM20 untuk mencukupi nilai RM40?",
+                options: ["2 keping", "4 keping", "1 keping", "3 keping"],
+                answer: 0,
+                hint: "RM20 + RM20 = RM40 (2 keping)."
+            },
+            {
+                id: 13,
+                question: "\"Tiga puluh tujuh ringgit lima puluh sen\" dalam angka ialah:",
+                options: ["RM37.50", "RM35.70", "RM375", "RM3.75"],
+                answer: 0,
+                hint: "37 ringgit dan 50 sen = RM37.50."
+            },
+            {
+                id: 14,
+                question: "Jika anda ada RM50 dan membeli beg berharga RM30, berapakah baki wang anda?",
+                options: ["RM20", "RM10", "RM30", "RM5"],
+                answer: 0,
+                hint: "RM50 - RM30 = RM20."
+            },
+            {
+                id: 15,
+                question: "Sekeping wang kertas RM5 dan dua keping RM1 berjumlah:",
+                options: ["RM7", "RM6", "RM8", "RM10"],
+                answer: 0,
+                hint: "RM5 + RM1 + RM1 = RM7."
+            }
+        ];
+
+        let studentData = { name: '', class: '' };
+        let userAnswers = {};
+
+        // Mula Kuiz
+        function startQuiz(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('student-name').value.trim();
+            const classInput = document.getElementById('student-class').value.trim();
+
+            if (!nameInput || !classInput) return;
+
+            studentData.name = nameInput;
+            studentData.class = classInput;
+
+            // Kemaskini Badge Header
+            document.getElementById('badge-name').textContent = studentData.name;
+            document.getElementById('badge-class').textContent = studentData.class;
+            document.getElementById('student-badge').classList.remove('hidden');
+
+            // Papar skrin kuiz
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            renderQuestions();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Semua Soalan
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            quizData.forEach((q, index) => {
+                const qCard = document.createElement('div');
+                qCard.className = 'bg-white rounded-3xl p-6 shadow-md border-2 border-slate-100 hover:border-amber-200 transition';
+                
+                let optionsHtml = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHtml += `
+                        <label class="option-card flex items-center p-4 rounded-2xl border-2 border-slate-100 bg-slate-50/50 hover:bg-amber-50/50 hover:border-amber-300 cursor-pointer">
+                            <input type="radio" name="q_${q.id}" value="${optIndex}" onchange="selectAnswer(${q.id}, ${optIndex})" class="w-5 h-5 text-amber-500 focus:ring-amber-400">
+                            <span class="ml-3 font-semibold text-slate-700">${opt}</span>
+                        </label>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="bg-amber-400 text-amber-950 font-bold px-3 py-1 rounded-xl text-sm">
+                            Soalan ${index + 1}
+                        </span>
+                        <h3 class="text-lg font-bold text-slate-800 leading-snug">${q.question}</h3>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        ${optionsHtml}
+                    </div>
+                `;
+                container.appendChild(qCard);
+            });
+        }
+
+        // Simpan jawapan murid
+        function selectAnswer(questionId, optionIndex) {
+            userAnswers[questionId] = optionIndex;
+            document.getElementById('unanswered-warning').classList.add('hidden');
+        }
+
+        // Semak Jawapan & Kirim Keputusan
+        function checkAnswers() {
+            // Semak jawapan lengkap
+            if (Object.keys(userAnswers).length < quizData.length) {
+                document.getElementById('unanswered-warning').classList.remove('hidden');
+                return;
+            }
+
+            let score = 0;
+            quizData.forEach(q => {
+                if (userAnswers[q.id] === q.answer) {
+                    score++;
+                }
+            });
+
+            const percentage = Math.round((score / quizData.length) * 100);
+
+            // Papar Keputusan & Sijil
+            showResults(score, percentage);
+        }
+
+        // Paparkan Skrin Sijil
+        function showResults(score, percentage) {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // Papar data markah
+            document.getElementById('score-text').textContent = `${score} / ${quizData.length}`;
+            document.getElementById('percentage-text').textContent = `${percentage}%`;
+
+            let gradeText = "";
+            let statusText = "";
+            
+            if (percentage >= 80) {
+                gradeText = "🌟 Cemerlang!";
+                statusText = "Sangat Cemerlang & Menguasai!";
+            } else if (percentage >= 50) {
+                gradeText = "👍 Syabas & Baik!";
+                statusText = "Memuaskan & Lulus!";
+            } else {
+                gradeText = "💪 Teruskan Usaha!";
+                statusText = "Perlu Lebih Banyak Latihan!";
+            }
+
+            document.getElementById('grade-badge').textContent = gradeText;
+
+            // Isi Kandungan Sijil
+            document.getElementById('cert-name').textContent = studentData.name;
+            document.getElementById('cert-class').textContent = studentData.class;
+            document.getElementById('cert-score').textContent = `${score} / ${quizData.length} (${percentage}%)`;
+            document.getElementById('cert-status').textContent = statusText;
+
+            const today = new Date();
+            const dateFormatted = today.toLocaleDateString('ms-MY', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            document.getElementById('cert-date').textContent = dateFormatted;
+
+            // Jana Ulasan Jawapan
+            renderReview();
+
+            // Efek Confetti jika markah tinggi
+            if (percentage >= 60) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Rendisi Semakan Ulasan
+        function renderReview() {
+            const container = document.getElementById('review-container');
+            container.innerHTML = '';
+
+            quizData.forEach((q, index) => {
+                const isCorrect = userAnswers[q.id] === q.answer;
+                const userChoiceText = q.options[userAnswers[q.id]];
+                const correctChoiceText = q.options[q.answer];
+
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-2xl border-2 ${isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`;
+
+                item.innerHTML = `
+                    <div class="flex items-start justify-between gap-2">
+                        <div>
+                            <p class="font-bold text-slate-800">${index + 1}. ${q.question}</p>
+                            <p class="text-sm mt-1">
+                                Jawapan Anda: <span class="font-bold ${isCorrect ? 'text-emerald-600' : 'text-rose-600'}">${userChoiceText}</span>
+                            </p>
+                            ${!isCorrect ? `<p class="text-sm text-slate-600">Jawapan Betul: <span class="font-bold text-emerald-600">${correctChoiceText}</span></p>` : ''}
+                            <p class="text-xs text-slate-500 italic mt-1"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i>${q.hint}</p>
+                        </div>
+                        <span class="text-xl">
+                            ${isCorrect ? '<i class="fa-solid fa-circle-check text-emerald-500"></i>' : '<i class="fa-solid fa-circle-xmark text-rose-500"></i>'}
+                        </span>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // Buat Semula Kuiz
+        function restartQuiz() {
+            userAnswers = {};
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+            document.getElementById('info-form').reset();
+            document.getElementById('student-badge').classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
